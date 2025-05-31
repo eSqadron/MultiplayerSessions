@@ -22,3 +22,7 @@ Add to Config/DefaultGame.ini:
 [/Script/Engine.GameSession]
 MaxPlayers=100
 ```
+
+Select in Edit->Plugins:
+1. Online Sbbsystem
+2. Online Subsystem Steam
