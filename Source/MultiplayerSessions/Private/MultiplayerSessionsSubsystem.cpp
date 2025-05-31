@@ -37,6 +37,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 		LastNumPublicConnections = NumPublicConnections;
 		LastMatchType = MatchType;
 		DestroySession();
+		return;
 	}
 
 	CreateSessionCompleteDelegateHandle = SessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
