@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "MultiplayerPlayerControllerBase.h"
 #include "MenuPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MULTIPLAYERSESSIONS_API AMenuPlayerController : public APlayerController
+class MULTIPLAYERSESSIONS_API AMenuPlayerController : public AMultiplayerPlayerControllerBase
 {
 	GENERATED_BODY()
 

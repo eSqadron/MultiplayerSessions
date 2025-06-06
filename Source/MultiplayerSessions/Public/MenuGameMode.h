@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "MultiplayerGameModeBase.h"
 #include "MenuGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MULTIPLAYERSESSIONS_API AMenuGameMode : public AGameMode
+class MULTIPLAYERSESSIONS_API AMenuGameMode : public AMultiplayerGameModeBase
 {
 	GENERATED_BODY()
 
