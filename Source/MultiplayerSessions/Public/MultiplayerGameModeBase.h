@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
-#include "LobbyGameMode.generated.h"
+#include "MultiplayerGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MULTIPLAYERSESSIONS_API ALobbyGameMode : public AGameMode
+class MULTIPLAYERSESSIONS_API AMultiplayerGameModeBase : public AGameMode
 {
 	GENERATED_BODY()
 
