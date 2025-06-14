@@ -129,6 +129,7 @@ void UMultiplayerSessionsSubsystem::JoinSession(const FOnlineSessionSearchResult
 {
 	if (!SessionInterface.IsValid())
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MultiplayerSessionsSubsystem] SessionInterface is not valid in JoinSession"));
 		MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
 		return;
 	}
@@ -138,6 +139,7 @@ void UMultiplayerSessionsSubsystem::JoinSession(const FOnlineSessionSearchResult
 	const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->JoinSession(*localPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionResult))
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MultiplayerSessionsSubsystem] JoinSession called on SessionInterface failed!"));
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);
 
 		MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
@@ -148,11 +150,16 @@ void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName SessionName, EOn
 {
 	if (!SessionInterface.IsValid())
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MultiplayerSessionsSubsystem] SessionInterface is not valid in OnJoinSessionComplete"));
 		return;
 	}
 
-	SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);
+	if(EOnJoinSessionCompleteResult::Success != Result)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[MultiplayerSessionsSubsystem] OnJoinSessionComplete called with Result: %d"), static_cast<int32>(Result));
+	}
 
+	SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);
 	MultiplayerOnJoinSessionComplete.Broadcast(Result);
 }
 

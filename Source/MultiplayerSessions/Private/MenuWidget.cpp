@@ -19,11 +19,13 @@ void UMenuWidget::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch
 	UWorld* World = GetWorld();
 	if (nullptr == World)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] World is null in MenuSetup"));
 		return;
 	}
 	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (nullptr == PlayerController)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] PlayerController is null in MenuSetup"));
 		return;
 	}
 
@@ -37,12 +39,14 @@ void UMenuWidget::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch
 
 	if (nullptr == GameInstance)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] GameInstance is null in MenuSetup"));
 		return;
 	}
 
 	MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	if (nullptr == MultiplayerSessionsSubsystem)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] MultiplayerSessionsSubsystem is null in GameInstance"));
 		return;
 	}
 
@@ -59,11 +63,13 @@ bool UMenuWidget::Initialize()
 
 	if (nullptr == HostButton)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] HostButton is null in Initialize"));
 		return false;
 	}
 
 	if (nullptr == JoinButton)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] JoinButton is null in Initialize"));
 		return false;
 	}
 
@@ -82,24 +88,23 @@ void UMenuWidget::NativeDestruct()
 
 void UMenuWidget::HostButtonClicked()
 {
+	UE_LOG(LogTemp, Display, TEXT("[MenuWidget] Host button clicked!"));
 	HostButton->SetIsEnabled(false);
 	JoinButton->SetIsEnabled(false);
 	if (nullptr == MultiplayerSessionsSubsystem)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] MultiplayerSessionsSubsystem is null in HostButtonClicked"));
 		return;
 	}
 
-	MultiplayerSessionsSubsystem->CreateSession(4, TEXT("FreeForAll"));
+	MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType);
 }
 
 void UMenuWidget::OnCreateSession(bool bWasSuccesfull)
 {
 	if (!bWasSuccesfull)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(0, 2.f, FColor::Red, TEXT("Failed To create session"));
-		}
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] Failed to create a session in OnCreateSession"));
 
 		HostButton->SetIsEnabled(true);
 		JoinButton->SetIsEnabled(true);
@@ -107,14 +112,12 @@ void UMenuWidget::OnCreateSession(bool bWasSuccesfull)
 		return;
 	}
 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(0, 2.f, FColor::Green, TEXT("Session Succesfully created"));
-	}
+	UE_LOG(LogTemp, Display, TEXT("[MenuWidget] Succesfully created session"));
 
 	UWorld* World = GetWorld();
 	if (nullptr == World)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] World is null in OnCreateSession"));
 		return;
 	}
 	World->ServerTravel(PathToLobby);
@@ -124,14 +127,19 @@ void UMenuWidget::OnFindSession(const TArray<FOnlineSessionSearchResult>& Sessio
 {
 	if (nullptr == MultiplayerSessionsSubsystem)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] MultiplayerSessionsSubsystem is null in OnFindSession"));
 		return;
 	}
 
 	if (!bWasSuccesfull || SessionResult.Num() == 0)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] Failed to find a session in OnFindSession. bWasSuccesfull: %d SessionResult.Num(): %d"), bWasSuccesfull, SessionResult.Num());
 		HostButton->SetIsEnabled(true);
 		JoinButton->SetIsEnabled(true);
+		return;
 	}
+
+	UE_LOG(LogTemp, Display, TEXT("[MenuWidget] Succesfully found %d session in OnFindSession."), SessionResult.Num());
 
 	for (FOnlineSessionSearchResult result : SessionResult)
 	{
@@ -140,6 +148,7 @@ void UMenuWidget::OnFindSession(const TArray<FOnlineSessionSearchResult>& Sessio
 
 		if (SettingValue != MatchType)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("[MenuWidget] Skipping session of match type %s in OnFindSession."), *SettingValue);
 			continue;
 		}
 
@@ -154,6 +163,7 @@ void UMenuWidget::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if (nullptr == Subsystem)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] OnlineSubsystem is null in OnJoinSession"));
 		return;
 	}
 
@@ -161,12 +171,14 @@ void UMenuWidget::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 
 	if(!SessionInterface.IsValid())
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] SessionInterface isn't valid in OnJoinSession"));
 		return;
 	}
 
 	FString address;
 	if (!SessionInterface->GetResolvedConnectString(NAME_GameSession, address))
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] Failed to get resolved connect string in OnJoinSession"));
 		return;
 	}
 
@@ -174,18 +186,19 @@ void UMenuWidget::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 
 	if (nullptr == playerController)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] PlayerController is null in OnJoinSession"));
 		return;
 	}
 
 	if (Result != EOnJoinSessionCompleteResult::Success)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] Failed to join session in OnJoinSession. Result: %d"), Result);
 		HostButton->SetIsEnabled(true);
 		JoinButton->SetIsEnabled(true);
 		return;
 	}
 
 	playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
-
 }
 
 void UMenuWidget::OnDestroySession(bool bWasSuccesfull)
@@ -197,6 +210,7 @@ void UMenuWidget::OnStartSession(bool bWasSuccesfull)
 	UWorld* World = GetWorld();
 	if (nullptr == World)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] World null in OnStartSession"));
 		return;
 	}
 	World->ServerTravel(TEXT("/Game/ThirdPerson/Maps/ThirdPersonMap?listen"));
@@ -204,10 +218,12 @@ void UMenuWidget::OnStartSession(bool bWasSuccesfull)
 
 void UMenuWidget::JoinButtonClicked()
 {
+	UE_LOG(LogTemp, Display, TEXT("[MenuWidget] Join button clicked!"));
 	HostButton->SetIsEnabled(false);
 	JoinButton->SetIsEnabled(false);
 	if (nullptr == MultiplayerSessionsSubsystem)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[MenuWidget] MultiplayerSessionsSubsystem is nullptr in JoinButtonClicked"));
 		return;
 	}
 

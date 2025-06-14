@@ -43,3 +43,26 @@ FString AMultiplayerPlayerControllerBase::GetPlayerName() const
 
 	return state->GetPlayerName();
 }
+
+FString AMultiplayerPlayerControllerBase::GetLocalRoleAsString() const
+{
+	ENetRole localRole = GetLocalRole();
+	switch (localRole)
+	{
+	case ROLE_None:
+		return TEXT("None");
+	case ROLE_SimulatedProxy:
+		return TEXT("Simulated Proxy");
+	case ROLE_AutonomousProxy:
+		return TEXT("Autonomous Proxy");
+	case ROLE_Authority:
+		return TEXT("Authority");
+	default:
+		return TEXT("Unknown Role");
+	}
+}
+
+//void AMultiplayerPlayerControllerBase::ReplicateIndexToServer_Implementation(uint8 NewPlayerIndex)
+//{
+//	PlayerIndex = NewPlayerIndex;
+//}
