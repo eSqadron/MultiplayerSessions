@@ -26,7 +26,7 @@ void AMenuPlayerController::BeginPlay()
 		return;
 	}
 
-	MainMenuWidget->MenuSetup(5, TEXT("FreeForAll"), TEXT("/Game/Lobby/LobbyMap"));
+	MainMenuWidget->MenuSetup(5, TEXT("MothershipOnlineGame"), TEXT("/Game/Lobby/LobbyMap"));
 	MainMenuWidget->AddToViewport();
 
 	SetShowMouseCursor(true);
